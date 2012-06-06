@@ -47,8 +47,8 @@
             padding: 1%;
             -webkit-border-radius: 0 0 0 10px;
             border-radius: 0 0 0 10px;
-            -webkit-box-shadow: 0 7px 6px 0 rgba(0, 0, 0, 0.3);
-            box-shadow: 0 7px 6px 0 rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
         }
 
         section#core-selector h1 {
@@ -106,8 +106,8 @@
             padding: 16px 16px 5px;
             -webkit-border-radius: 0 0 10px 10px;
             border-radius: 0 0 10px 10px;
-            -webkit-box-shadow: 0 7px 6px 0 rgba(0, 0, 0, 0.3);
-            box-shadow: 0 7px 6px 0 rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
         }
 
 
@@ -254,31 +254,41 @@
         $("#base, #html").on("change", function(e) {
             changeBaseOrHtml();
 
+            var title = "<?php echo $title ?>";
+
             if (typeof history.pushState == "function") {
                 history.pushState(
                     {
                         base: $("#base").val(),
                         html: $("#html").val()
                     },
-                    "<?php echo $title ?>",
+                    title,
                     "?base=" + encodeURIComponent($("#base").val()) + "&html=" + encodeURIComponent($("#html").val())
                 );
             }
+
+            $("title").html(title);
         });
 
         $(window).on("popstate", function(e) {
-            console.log("popstate", e.originalEvent.state);
             var state = e.originalEvent.state;
+
+            if (state == null) {
+                return;
+            }
+
+            $.extend({
+                url: "",
+                base: "",
+                html: ""
+            }, state);
+
             if (state.url) {
                 $("#url").val(state.url);
                 loadUrl(state.url, false);
-            } else if (state.base || state.html) {
-                if (state.base) {
-                    $("#base").val(state.base);
-                }
-                if (state.html) {
-                    $("#html").val(state.html);
-                }
+            } else {
+                $("#base").val(state.base);
+                $("#html").val(state.html);
                 changeBaseOrHtml();
             }
         })
